@@ -4,7 +4,7 @@
 
 A package has been created to speed-up the development by symlinking packages. Install the package globally.
 
-    composer global require railken/cli-amethyst
+    composer global require railken/composer-link
     
 If this is your first global composer package, you have to add the composer path
 
