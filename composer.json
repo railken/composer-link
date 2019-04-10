@@ -1,0 +1,28 @@
+{
+    "name": "railken/composer-link",
+    "keywords": ["laravel"],
+    "license": "MIT",
+    "require": {
+        "php": ">=7.1",
+        "doctrine/inflector": "^1.3",
+        "eloquent/composer-config-reader": "^2.1",
+        "symfony/console": "^4.2",
+        "symfony/cache": "^4.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~7.1"
+    },
+    "autoload": {
+        "psr-4" : {
+            "Railken\\ComposerLink\\" : "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": { 
+            "Railken\\ComposerLink\\Tests\\": "tests/"
+        }
+    },
+    "bin": [
+        "bin/composer-link"
+    ]
+}
