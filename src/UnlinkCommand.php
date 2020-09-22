@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Command\Command;
 
 class UnlinkCommand extends Command
 {
@@ -29,7 +30,7 @@ class UnlinkCommand extends Command
         if (!file_exists($composerPath)) {
             $this->error($output, 'No composer.json found');
 
-            return 0;
+            return Command::FAILURE;
         }
 
         $name = $input->getArgument('name');
@@ -41,7 +42,7 @@ class UnlinkCommand extends Command
             if (!$packageDir) {
                 $this->error($output, sprintf('Cannot find package %s', $name));
 
-                return 0;
+                return Command::FAILURE;
             }
 
             $link = $input->getOption('dir')."/vendor/".$name;
@@ -61,7 +62,7 @@ class UnlinkCommand extends Command
             if (!$this->cache->has($this->parseKeyCache($packageName))) { 
                 $this->error($output, sprintf('Package %s is already unlinked', $packageName));
 
-                return 0;
+                return Command::FAILURE;
             }
 
             $this->cache->delete($this->parseKeyCache($packageName));
@@ -69,6 +70,6 @@ class UnlinkCommand extends Command
             $this->info($output, sprintf('Removed %s: %s', $packageName, $input->getOption('dir')));
         }
 
-        return 1;
+        return Command::SUCCESS;
     }
 }

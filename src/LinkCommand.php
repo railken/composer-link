@@ -11,6 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Console\Command\Command;
 
 class LinkCommand extends Command
 {
@@ -52,7 +53,7 @@ class LinkCommand extends Command
         if (!file_exists($composerPath)) {
             $this->error($output, 'No composer.json found');
 
-            return 0;
+            return Command::FAILURE;
         }
 
         $name = $input->getArgument('name');
@@ -67,7 +68,7 @@ class LinkCommand extends Command
             if (!$packageDir) {
                 $this->error($output, sprintf('Cannot find package %s', $name));
 
-                return 0;
+                return Command::FAILURE;
             }
 
             $link = $input->getOption('dir')."/vendor/".$name;
@@ -91,7 +92,7 @@ class LinkCommand extends Command
             if ($dirPackage = $this->cache->get($this->parseKeyCache($packageName))) { 
                 $this->error($output, sprintf('Package %s is already linked at %s', $packageName, $dirPackage));
 
-                return 0;
+                return Command::FAILURE;
             }
 
             $this->cache->set($this->parseKeyCache($packageName), $input->getOption('dir'));
@@ -99,7 +100,8 @@ class LinkCommand extends Command
             $this->info($output, sprintf('Added %s: %s', $packageName, $input->getOption('dir')));
         }
 
-        return 1;
+        return Command::SUCCESS;
     }
 
 }
+re
