@@ -27,7 +27,9 @@ class UnlinkCommand extends Command
         $composerPath = $input->getOption('dir').'/composer.json';
 
         if (!file_exists($composerPath)) {
-            return $this->error($output, 'No composer.json found');
+            $this->error($output, 'No composer.json found');
+
+            return 0;
         }
 
         $name = $input->getArgument('name');
@@ -37,7 +39,9 @@ class UnlinkCommand extends Command
             $packageDir = $this->cache->get($this->parseKeyCache($name));
 
             if (!$packageDir) {
-                return $this->error($output, sprintf('Cannot find package %s', $name));
+                $this->error($output, sprintf('Cannot find package %s', $name));
+
+                return 0;
             }
 
             $link = $input->getOption('dir')."/vendor/".$name;
@@ -55,12 +59,16 @@ class UnlinkCommand extends Command
 
 
             if (!$this->cache->has($this->parseKeyCache($packageName))) { 
-                return $this->error($output, sprintf('Package %s is already unlinked', $packageName));
+                $this->error($output, sprintf('Package %s is already unlinked', $packageName));
+
+                return 0;
             }
 
             $this->cache->delete($this->parseKeyCache($packageName));
 
-            return $this->info($output, sprintf('Removed %s: %s', $packageName, $input->getOption('dir')));
+            $this->info($output, sprintf('Removed %s: %s', $packageName, $input->getOption('dir')));
         }
+
+        return 1;
     }
 }
