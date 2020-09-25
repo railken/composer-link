@@ -4,12 +4,12 @@ namespace Railken\ComposerLink;
 
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Eloquent\Composer\Configuration\ConfigurationReader;
-use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-    use RecursiveDirectoryIterator;
-    use RecursiveIteratorIterator;
-    use SplFileInfo;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use SplFileInfo;
 
 class Command extends BaseCommand
 {
@@ -29,14 +29,14 @@ class Command extends BaseCommand
     public function __construct()
     {
         $this->composerReader = new ConfigurationReader();
-        $this->cache = new FilesystemCache();
+        $this->cache = new FilesystemAdapter();
 
         parent::__construct();
     }
 
     public function parseKeyCache(string $key): string
     {
-        return base64_encode($key);
+        return str_replace("/", '-', $key);
     }
 
     public function info(OutputInterface $output, $message)
@@ -106,5 +106,29 @@ class Command extends BaseCommand
         }
 
         return true;
+    }
+
+    public function setCacheItem($key, $value)
+    {
+        $cacheItem = $this->cache->getItem($key);
+        $cacheItem->set($value);
+        $this->cache->save($cacheItem);
+    }
+
+    public function getCacheItem($key)
+    {
+        $cacheItem = $this->cache->getItem($key);
+        return $cacheItem->get();
+    }
+
+    public function hasCacheItem($key)
+    {
+        $cacheItem = $this->cache->getItem($key);
+        return $cacheItem->isHit();
+    }
+
+    public function unsetCacheItem($key)
+    {
+        $this->cache->deleteItem($key);
     }
 }

@@ -9,8 +9,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Command\Command;
+use Railken\ComposerLink\Command as BaseCommand;
 
-class UnlinkCommand extends Command
+class UnlinkCommand extends BaseCommand
 {
 
     protected function configure()
@@ -37,7 +38,7 @@ class UnlinkCommand extends Command
 
         if (!empty($name)) {
 
-            $packageDir = $this->cache->get($this->parseKeyCache($name));
+            $packageDir = $this->getCacheItem($this->parseKeyCache($name));
 
             if (!$packageDir) {
                 $this->error($output, sprintf('Cannot find package %s', $name));
@@ -59,13 +60,13 @@ class UnlinkCommand extends Command
             $packageName = $this->composerReader->read($composerPath)->name();
 
 
-            if (!$this->cache->has($this->parseKeyCache($packageName))) { 
+            if (!$this->hasCacheItem($this->parseKeyCache($packageName))) { 
                 $this->error($output, sprintf('Package %s is already unlinked', $packageName));
 
                 return Command::FAILURE;
             }
 
-            $this->cache->delete($this->parseKeyCache($packageName));
+            $this->unsetCacheItem($this->parseKeyCache($packageName));
 
             $this->info($output, sprintf('Removed %s: %s', $packageName, $input->getOption('dir')));
         }

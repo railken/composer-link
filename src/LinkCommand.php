@@ -9,11 +9,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Console\Command\Command;
+use Railken\ComposerLink\Command as BaseCommand;
 
-class LinkCommand extends Command
+class LinkCommand extends BaseCommand
 {
     /**
      * @var \Eloquent\Composer\Configuration\ConfigurationReader
@@ -24,17 +25,6 @@ class LinkCommand extends Command
      * @var \Symfony\Component\Cache\Simple\FilesystemCache;
      */
     protected $cache;
-    
-    /**
-     * Create a new instance of the command.
-     */
-    public function __construct()
-    {
-        $this->composerReader = new ConfigurationReader();
-        $this->cache = new FilesystemCache();
-
-        parent::__construct();
-    }
 
     protected function configure()
     {
@@ -61,9 +51,7 @@ class LinkCommand extends Command
 
         if (!empty($name)) {
 
-            print_r($this->parseKeyCache($name));
-
-            $packageDir = $this->cache->get($this->parseKeyCache($name));
+            $packageDir = $this->getCacheItem($this->parseKeyCache($name));
 
             if (!$packageDir) {
                 $this->error($output, sprintf('Cannot find package %s', $name));
@@ -89,19 +77,19 @@ class LinkCommand extends Command
             $packageName = $this->composerReader->read($composerPath)->name();
 
             print_r($this->parseKeyCache($packageName));
-            if ($dirPackage = $this->cache->get($this->parseKeyCache($packageName))) { 
+            if ($dirPackage = $this->getCacheItem($this->parseKeyCache($packageName))) { 
                 $this->error($output, sprintf('Package %s is already linked at %s', $packageName, $dirPackage));
 
                 return Command::FAILURE;
             }
 
-            $this->cache->set($this->parseKeyCache($packageName), $input->getOption('dir'));
+            $this->setCacheItem($this->parseKeyCache($packageName), $input->getOption('dir'));
 
             $this->info($output, sprintf('Added %s: %s', $packageName, $input->getOption('dir')));
         }
+
 
         return Command::SUCCESS;
     }
 
 }
-re
