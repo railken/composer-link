@@ -73,10 +73,8 @@ class LinkCommand extends BaseCommand
 
         } else {
 
-
             $packageName = $this->composerReader->read($composerPath)->name();
 
-            print_r($this->parseKeyCache($packageName));
             if ($dirPackage = $this->getCacheItem($this->parseKeyCache($packageName))) { 
                 $this->error($output, sprintf('Package %s is already linked at %s', $packageName, $dirPackage));
 
